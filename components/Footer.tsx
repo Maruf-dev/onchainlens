@@ -11,7 +11,7 @@ const Footer: React.FC = () => {
           </div>
         </div>
         <div className="flex items-center space-x-4">
-          <a href="#" className="hover:text-cyan-300 transition-colors">
+          <a href="https://github.com/Maruf-dev/onchainlens" className="hover:text-cyan-300 transition-colors">
             GitHub (репозиторий)
           </a>
           <a href="#hero" className="hover:text-cyan-300 transition-colors">
