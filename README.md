@@ -1,20 +1,127 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# OnchainLens — ончейн-аналитика для выявления прибыльных инвесторов
 
-# Run and deploy your AI Studio app
+OnchainLens — это учебно-исследовательский проект, который показывает, как открытые данные блокчейна можно превратить в понятный аналитический инструмент для криптоинвесторов и исследователей.
 
-This contains everything you need to run your app locally.
+Цель прототипа — выявлять **прибыльных инвесторов** и так называемых **“diamond hands”** (долгосрочных держателей активов) на основе ончейн-данных и визуализировать результаты через современный Web3-стильный интерфейс.
 
-View your app in AI Studio: https://ai.studio/apps/drive/16AauD4GU1oDNfH7NJqVnizzZBX17CtFM
+> 🔬 Проект одновременно выглядит как **академическое исследование** и как прототип **реального Web3-продукта**.
 
-## Run Locally
+---
 
-**Prerequisites:**  Node.js
+## 🔍 Основная идея
 
+- Блокчейн прозрачен, но «сырой» — эксплореры показывают транзакции, а не поведение.
+- Новички ориентируются на шум в соцсетях, а не на данные.
+- OnchainLens выступает **анализирующим слоем** над блокчейном:
+  - получает агрегированные ончейн-данные из аналитических платформ (Dune, Flipside и др.),
+  - вычисляет метрики прибыльности (PnL), длительность удержания активов,
+  - формирует **рейтинги кошельков** и выделяет **“diamond hands”**,
+  - показывает всё это в виде **интерактивной веб-панели**.
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+Текущая версия — **демо-лендинг** с мок-данными, который можно:
+- защищать как курсовой проект,
+- дальше развивать в диплом / стартап.
+
+---
+
+## ✨ Функционал прототипа
+
+- 🔹 **Crypto/Web3-стильный лендинг**: тёмная тема, неоновые акценты, glassmorphism.
+- 🔹 **Hero-блок** с кратким объяснением проекта (академический + продуктовый тон).
+- 🔹 Разделы:
+  - Проблема: почему сырые ончейн-данные не полезны обычному инвестору.
+  - Решение: концепция OnchainLens как слоя аналитики.
+  - Как это работает: трёхшаговая схема (данные → аналитика → UI).
+- 🔹 **Demo Panel**:
+  - таблица топ-кошельков,
+  - фильтрация по сети (Ethereum, BSC, Polygon, Solana, Arbitrum),
+  - фильтр по минимальному PnL,
+  - сортировка по прибыльности и времени удержания.
+- 🔹 Разделы **Features / Tech Stack / Roadmap / CTA**, оформленные как для реального Web3-проекта.
+- 🔹 Готовый текст, который можно использовать в пояснительной записке.
+
+---
+
+## 🧱 Технологический стек
+
+Текущий фронтенд-прототип:
+
+- **React + TypeScript**
+- **Vite** (быстрый dev-server и сборка)
+- **Tailwind CSS** (утилитарная стилизация, адаптивный дизайн)
+
+Архитектурно проект **готов** к интеграции:
+
+- с **Dune Analytics / Flipside Crypto** (REST API с результатами SQL-запросов),
+- с серверной частью на **Next.js / Node.js**, которая:
+  - выполняет запросы к аналитическим платформам,
+  - кэширует результаты,
+  - отдаёт фронтенду очищенные данные.
+
+---
+
+## 🧩 Модель данных
+
+Базовый тип кошелька описан в `types.ts`:
+
+```ts
+export interface Wallet {
+  wallet: string;   // адрес кошелька
+  chain: string;    // блокчейн-сеть (Ethereum, BSC, Polygon и т.п.)
+  win_rate: number; // "PnL proxy" в диапазоне 0–1 (0.84 ≈ 84%)
+  hold_days: number;// количество дней удержания активов
+  last_tx: string;  // дата последней активности
+}
+
+[User Browser]
+      │
+      ▼
+[React + Vite Frontend]  ← (демо-мок-данные)
+      │
+      │ (в будущем: HTTP-запросы к API)
+      ▼
+[Backend API Layer (Next.js / Node.js)]
+      │
+      ▼
+[Dune / Flipside API] → [Indexed Blockchain Tables] → [Blockchain]
+
+.
+├─ App.tsx                 # корневой компонент приложения
+├─ index.tsx               # точка входа Vite/React
+├─ index.html              # базовый HTML-шаблон
+├─ types.ts                # тип Wallet и др. интерфейсы
+├─ components/
+│   ├─ Header.tsx          # верхнее меню / логотип
+│   ├─ Hero.tsx            # главный экран
+│   ├─ Problem.tsx         # блок "Проблема"
+│   ├─ Solution.tsx        # блок "Решение"
+│   ├─ HowItWorks.tsx      # блок "Как это работает"
+│   ├─ DemoPanel.tsx       # демо-таблица с рейтингами
+│   ├─ Features.tsx        # ключевые возможности
+│   ├─ TechStack.tsx       # стек и архитектура
+│   ├─ Roadmap.tsx         # этапы развития
+│   ├─ CTA.tsx             # завершающий призыв к действию
+│   └─ Footer.tsx          # подвал
+├─ package.json
+├─ tsconfig.json
+├─ vite.config.ts
+└─ README.md               # этот файл
+# npm
+npm install
+
+# или yarn
+# yarn
+
+# или pnpm
+# pnpm install
+
+npm run dev
+# или:
+# yarn dev
+# pnpm dev
+
+npm run build
+# yarn build / pnpm build
+
+npm run preview
+
